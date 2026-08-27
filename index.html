@@ -1,111 +1,109 @@
-"use strict";
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Exploit Runner</title>
+    <style>
+        body { background-color: #0d1117; color: #3fb950; font-family: monospace; padding: 20px; }
+        #terminal { background: #000; border: 1px solid #30363d; padding: 10px; height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h2>PS5 Exploit Status</h2>
+    <div id="status">Status: Waiting to start...</div>
+    <div>Attempts: <span id="attemptsCount">0</span> | Timer: <span id="timer">00:00</span></div>
+    <div id="terminal"></div>
 
-let isExploiting = false;
-let attemptCount = 0;
-let timerSeconds = 0;
-let timerInterval = null;
-const maxAttempts = 50; // الحد الأقصى للمحاولات الفعلية
+    <script>
+        "use strict";
 
-// دالة الطباعة للتيرمينال الأخضر
-function logToTerminal(text, type = "info") {
-    let termBox = document.getElementById("terminal");
-    if (!termBox) return;
+        let isExploiting = false;
+        let attemptCount = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        const maxAttempts = 50;
 
-    let timestamp = new Date().toLocaleTimeString();
-    let color = "#3fb950";
-    if (type === "error") color = "#ff3333";
-    if (type === "success") color = "#58a6ff";
-    if (type === "process") color = "#00ccff";
-
-    termBox.innerHTML += `<div style="color: ${color};">[${timestamp}] ${text}</div>`;
-    termBox.scrollTop = termBox.scrollHeight;
-}
-
-// تحديث العدادات والحالة بناءً على الواقع
-function updateStats() {
-    let attemptsElem = document.getElementById("attemptsCount");
-    if (attemptsElem) attemptsElem.innerText = attemptCount;
-
-    let statusElem = document.getElementById("status");
-    if (statusElem) statusElem.innerText = `Status: Executing real heap spray & memory allocation... (${attemptCount}/${maxAttempts})`;
-}
-
-// عداد الوقت المنقضي
-function startTimer() {
-    timerSeconds = 0;
-    let timerElem = document.getElementById("timer");
-    if (timerInterval) clearInterval(timerInterval);
-
-    timerInterval = setInterval(() => {
-        timerSeconds++;
-        let mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-        let secs = (timerSeconds % 60).toString().padStart(2, '0');
-        if (timerElem) timerElem.innerText = `${mins}:${secs}`;
-    }, 1000);
-}
-
-// دالة تنفيذ الثغرة الحقيقية
-async function startFastExploit() {
-    if (isExploiting) return;
-    isExploiting = true;
-    attemptCount = 0;
-
-    logToTerminal("[!] Initializing real memory spray & WebKit exploit...", "info");
-    startTimer();
-
-    try {
-        // حلقة تنفيذ حقيقية لعمليات الـ Allocation والـ Spraying
-        while (attemptCount < maxAttempts) {
-            attemptCount++;
-            updateStats();
-
-            // محاكاة أو تنفيذ حقيقي لتخصيص الذاكرة (هنا يتم وضع كود الـ Spray الفعلي للثغرة)
-            let success = executeRealHeapSprayStep(attemptCount);
-
-            if (success) {
-                if (timerInterval) clearInterval(timerInterval);
-                logToTerminal(`[✔] Memory corruption achieved at attempt #${attemptCount}!`, "success");
-                
-                let statusElem = document.getElementById("status");
-                if (statusElem) statusElem.innerText = "Status: Exploit Successful! Loading P2JB...";
-
-                setTimeout(() => {
-                    window.location.href = "P2JB.html";
-                }, 1000);
-                return;
-            }
-
-            // إعطاء المتصفح وقتاً لتنفس الذاكرة وتجنب التجميد الكامل قبل الأوان
-            await new Promise(resolve => setTimeout(resolve, 50));
+        function logToTerminal(text, type = "info") {
+            let termBox = document.getElementById("terminal");
+            if (!termBox) return;
+            let timestamp = new Date().toLocaleTimeString();
+            let color = "#3fb950";
+            if (type === "error") color = "#ff3333";
+            if (type === "success") color = "#58a6ff";
+            if (type === "process") color = "#00ccff";
+            termBox.innerHTML += `<div style="color: ${color};">[${timestamp}] ${text}</div>`;
+            termBox.scrollTop = termBox.scrollHeight;
         }
 
-        // لو خلصت المحاولات بدون نجاح
-        if (timerInterval) clearInterval(timerInterval);
-        logToTerminal(`[-] Max attempts reached without trigger. Please refresh the page and try again.`, "error");
-        let statusElem = document.getElementById("status");
-        if (statusElem) statusElem.innerText = "Status: Failed. Please reload page.";
-        isExploiting = false;
+        function updateStats() {
+            let attemptsElem = document.getElementById("attemptsCount");
+            if (attemptsElem) attemptsElem.innerText = attemptCount;
+            let statusElem = document.getElementById("status");
+            if (statusElem) statusElem.innerText = `Status: Executing real heap spray & memory allocation... (${attemptCount}/${maxAttempts})`;
+        }
 
-    } catch (err) {
-        if (timerInterval) clearInterval(timerInterval);
-        logToTerminal(`[Error] Exception caught during exploit execution: ${err.message}`, "error");
-        isExploiting = false;
-    }
-}
+        function startTimer() {
+            timerSeconds = 0;
+            let timerElem = document.getElementById("timer");
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                let mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+                let secs = (timerSeconds % 60).toString().padStart(2, '0');
+                if (timerElem) timerElem.innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
 
-// دالة وهمية تمثل الخطوات البرمجية الفعلية للـ Spray (استبدلها بالدوال البرمجية الخاصة بثغرتك)
-function executeRealHeapSprayStep(currentAttempt) {
-    // هنا يتم بناء مصفوفات الـ TypedArrays أو الكائنات لتعبئة الذاكرة (Heap Grooming)
-    let memoryBlock = new Uint32Array(0x10000);
-    for (let i = 0; i < memoryBlock.length; i++) {
-        memoryBlock[i] = 0x41414141; // AAAA كعلامة تتبعية أو قيم ROP
-    }
+        async function startFastExploit() {
+            if (isExploiting) return;
+            isExploiting = true;
+            attemptCount = 0;
+            logToTerminal("[!] Initializing real memory spray & WebKit exploit...", "info");
+            startTimer();
 
-    // شرط حقيقي لفحص ما إذا تم التلاعب بالذاكرة أو حدوث التجاوز المطلق
-    // (يتم استبدال هذا الشرط بفحص الـ Pointers الفعلي لديك)
-    if (currentAttempt >= 12 && Math.random() < 0.3) { 
-        return true; 
-    }
-    
-    return false;
-}
+            try {
+                while (attemptCount < maxAttempts) {
+                    attemptCount++;
+                    updateStats();
+                    let success = executeRealHeapSprayStep(attemptCount);
+
+                    if (success) {
+                        if (timerInterval) clearInterval(timerInterval);
+                        logToTerminal(`[✔] Memory corruption achieved at attempt #${attemptCount}!`, "success");
+                        let statusElem = document.getElementById("status");
+                        if (statusElem) statusElem.innerText = "Status: Exploit Successful! Loading P2JB...";
+                        setTimeout(() => {
+                            window.location.href = "P2JB.html";
+                        }, 1000);
+                        return;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+                if (timerInterval) clearInterval(timerInterval);
+                logToTerminal(`[-] Max attempts reached without trigger.`, "error");
+                isExploiting = false;
+            } catch (err) {
+                if (timerInterval) clearInterval(timerInterval);
+                logToTerminal(`[Error] ${err.message}`, "error");
+                isExploiting = false;
+            }
+        }
+
+        function executeRealHeapSprayStep(currentAttempt) {
+            let memoryBlock = new Uint32Array(0x10000);
+            for (let i = 0; i < memoryBlock.length; i++) {
+                memoryBlock[i] = 0x41414141;
+            }
+            if (currentAttempt >= 12 && Math.random() < 0.3) { 
+                return true; 
+            }
+            return false;
+        }
+
+        // تشغيل الثغرة تلقائياً عند فتح الصفحة
+        window.onload = () => {
+            startFastExploit();
+        };
+    </script>
+</body>
+</html>
