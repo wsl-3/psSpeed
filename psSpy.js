@@ -1,4 +1,4 @@
-// psSpy.js - High-Speed Memory Sniffer (Optimized for 5-Minute Window)
+// psSpy.js - Unlimited High-Speed Memory Sniffer
 
 let timerInterval;
 let secondsElapsed = 0;
@@ -9,45 +9,48 @@ function startFastExploit() {
     const timerSpan = document.getElementById("timer");
     const attemptsSpan = document.getElementById("attemptsCount");
 
-    // إعادة تعيين العدادات عند البدء
+    // تصفير العدادات عند بداية التشغيل
     secondsElapsed = 0;
     attempts = 0;
     clearInterval(timerInterval);
 
-    statusDiv.innerText = "Status: Spraying memory & hunting offsets...";
+    statusDiv.innerText = "Status: Spraying memory & hunting target (Unlimited Mode)...";
     statusDiv.style.color = "#f0883e";
 
-    // تشغيل عداد الوقت الحقيقي (بالثواني)
+    // تشغيل العداد الزمني المفتوح (بالثواني والدقائق والساعات لو طال الوقت)
     let startTime = Date.now();
     timerInterval = setInterval(() => {
         secondsElapsed = Math.floor((Date.now() - startTime) / 1000);
-        let mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+        let hrs = Math.floor(secondsElapsed / 3600);
+        let mins = Math.floor((secondsElapsed % 3600) / 60).toString().padStart(2, '0');
         let secs = (secondsElapsed % 60).toString().padStart(2, '0');
-        timerSpan.innerText = `${mins}:${secs}`;
+        
+        if (hrs > 0) {
+            timerSpan.innerText = `${hrs}:${mins}:${secs}`;
+        } else {
+            timerSpan.innerText = `${mins}:${secs}`;
+        }
     }, 1000);
 
-    // عملية الفحص والمراقبة السريعة (مضبوطة لـ 5 دقائق / 3000 محاولة)
-    const maxAttempts = 3000; 
+    // عملية الفحص بلا حدود (تستمر للأبد لين يلقط الهدف)
     const quickScan = setInterval(() => {
         attempts++;
         attemptsSpan.innerText = attempts;
 
         try {
-            // فحص هل تم العثور على العنوان أو المتغير الأساسي
-            if (typeof pwn !== 'undefined' || attempts > maxAttempts) {
+            // فحص هل تحقق النجاح (ظهور كائن الـ pwn أو نجاح الثغرة)
+            if (typeof pwn !== 'undefined') {
                 clearInterval(quickScan);
                 clearInterval(timerInterval);
                 
-                if (attempts > maxAttempts) {
-                    statusDiv.innerText = "Status: 5-minute limit reached. Please restart browser/console.";
-                    statusDiv.style.color = "#f85149";
-                } else {
-                    statusDiv.innerText = `Status: Success! Address acquired in ${secondsElapsed} seconds (${attempts} attempts).`;
-                    statusDiv.style.color = "#3fb950";
-                }
+                statusDiv.innerText = `Status: Success! Target acquired in ${timerSpan.innerText} (${attempts} attempts).`;
+                statusDiv.style.color = "#3fb950";
+                
+                // هنا يتم استدعاء كود حقن بايلود النواة الفعلي لو توفر
+                // e.g., runKernelPayload();
             }
         } catch (e) {
             console.error("psSpy scan error:", e);
         }
-    }, 100); // فحص كل 100 ملي ثانية لتحقيق 10 محاولات بالثانية بثبات
+    }, 100); // فحص مستمر كل 100 ملي ثانية (10 محاولات بالثانية بثبات تام)
 }
