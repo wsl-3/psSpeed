@@ -1,4 +1,4 @@
-// psSpy.js - High-Speed Memory Sniffer with Live Timer & Tracker
+// psSpy.js - High-Speed Memory Sniffer (Optimized for 5-Minute Window)
 
 let timerInterval;
 let secondsElapsed = 0;
@@ -26,19 +26,20 @@ function startFastExploit() {
         timerSpan.innerText = `${mins}:${secs}`;
     }, 1000);
 
-    // عملية الفحص والمراقبة السريعة
+    // عملية الفحص والمراقبة السريعة (مضبوطة لـ 5 دقائق / 3000 محاولة)
+    const maxAttempts = 3000; 
     const quickScan = setInterval(() => {
         attempts++;
         attemptsSpan.innerText = attempts;
 
         try {
-            // فحص هل تم العثور على العنوان أو المتغير الأساسي من ملفات سونيك
-            if (typeof pwn !== 'undefined' || attempts > 500) {
+            // فحص هل تم العثور على العنوان أو المتغير الأساسي
+            if (typeof pwn !== 'undefined' || attempts > maxAttempts) {
                 clearInterval(quickScan);
                 clearInterval(timerInterval);
                 
-                if (attempts > 500) {
-                    statusDiv.innerText = "Status: Max attempts reached. Please restart browser/console.";
+                if (attempts > maxAttempts) {
+                    statusDiv.innerText = "Status: 5-minute limit reached. Please restart browser/console.";
                     statusDiv.style.color = "#f85149";
                 } else {
                     statusDiv.innerText = `Status: Success! Address acquired in ${secondsElapsed} seconds (${attempts} attempts).`;
@@ -48,5 +49,5 @@ function startFastExploit() {
         } catch (e) {
             console.error("psSpy scan error:", e);
         }
-    }, 100); // فحص كل 100 ملي ثانية لتوازن السرعة وعدم تعليق المتصفح
+    }, 100); // فحص كل 100 ملي ثانية لتحقيق 10 محاولات بالثانية بثبات
 }
