@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PS5 Custom Exploit & psSpy UI</title>
+    <title>PS5 Lightning Exploit & psSpy UI</title>
     <style>
         body {
             background-color: #0b0e14;
@@ -36,14 +36,23 @@
             width: 100%;
         }
         .btn:hover { background-color: #2ea043; }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #8b949e;
+        }
+        .stats span { color: #58a6ff; font-weight: bold; }
         #status {
-            margin-top: 25px;
-            font-size: 16px;
+            margin-top: 20px;
+            font-size: 15px;
             font-weight: 500;
             color: #f0883e;
-            padding: 10px;
+            padding: 12px;
             background: #0d1117;
             border-radius: 6px;
+            border: 1px solid #30363d;
         }
     </style>
 </head>
@@ -51,17 +60,23 @@
 
     <div class="container">
         <h1>PS5 Lightning Exploit UI</h1>
-        <p>Optimized with custom psSpy mechanism to bypass long discovery delays.</p>
+        <p>Optimized with live psSpy timer & tracking mechanism.</p>
         
-        <button class="btn" onclick="runFastExploit()">Run Exploit & psSpy</button>
+        <button class="btn" onclick="startFastExploit()">Run Exploit & Track</button>
+        
         <div id="status">Status: Ready to initialize...</div>
+        
+        <div class="stats">
+            <div>Elapsed Time: <span id="timer">00:00</span></div>
+            <div>Attempts: <span id="attemptsCount">0</span></div>
+        </div>
     </div>
 
-    <!-- Core exploit scripts loaded remotely from Sonic's repo -->
+    <!-- Core exploit scripts loaded remotely -->
     <script src="https://soniciso1.github.io/pooP2JB/mem.js"></script>
     <script src="https://soniciso1.github.io/pooP2JB/main.js"></script>
 
-    <!-- Your optimized local high-speed memory sniffer -->
+    <!-- Your optimized psSpy script -->
     <script src="psSpy.js"></script>
 
 </body>
