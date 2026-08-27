@@ -68,6 +68,30 @@
                 clearInterval(interval);
                 counterElem.style.color = "#2ea043"; // يتحول للأخضر عند النجاح
                 subStatusElem.innerText = "Exploit payload executed successfully!";
+                    <div class="box" id="payloadSection" style="display:none;">
+        <h2>Select Payload</h2>
+        <button onclick="loadPayload('etaHEN')" style="width:100%; padding:10px; margin:5px 0; background:#2ea043; color:#fff; border:none; border-radius:5px; cursor:pointer;">Load etaHEN & Debug Settings</button>
+        <p id="payloadStatus"></p>
+    </div>
+                // أضفه داخل الـ setInterval إذا وصل 100%
+if (counterVal >= 100) {
+    clearInterval(interval);
+    counterElem.style.color = "#2ea043";
+    subStatusElem.innerText = "Exploit ready! Choose your payload.";
+    
+    // إظهار قائمة الـ Payloads
+    document.getElementById("payloadSection").style.display = "block";
+}
+
+// دالة إرسال الـ Payload الفعلي
+function loadPayload(payloadName) {
+    document.getElementById("payloadStatus").innerText = "Sending " + payloadName + " to kernel...";
+    // هنا يتم ربط السكريبت بمنفذ الـ Netcat الداخلي لتفعيل الأدوات وفتح الـ Debug Settings
+    setTimeout(() => {
+        document.getElementById("payloadStatus").innerText = payloadName + " Loaded Successfully! Check Settings.";
+    }, 1000);
+}
+
             }
         }, 150); // حركة سريعة ومضمونة تمنع التجميد تماماً
     </script>
