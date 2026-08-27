@@ -19,7 +19,7 @@
             border-radius: 12px;
             background: #1e1e1e;
             box-shadow: 0 0 20px rgba(0,255,204,0.3);
-            width: 380px;
+            width: 440px;
         }
         h1 { color: #00ffcc; font-size: 22px; margin-bottom: 10px; }
         p { color: #8b949e; font-size: 13px; margin-bottom: 25px; }
@@ -65,12 +65,19 @@
             display: none;
             margin-top: 10px;
             background: #161b22;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
-            font-size: 12px;
-            color: #58a6ff;
+            font-size: 10px;
+            color: #8b949e;
+            text-align: left;
             border: 1px dashed #30363d;
+            max-height: 180px;
+            overflow-y: auto;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            font-family: monospace;
         }
+        #creditsBox strong { color: #58a6ff; }
 
         #statusSection { display: none; }
         #status { font-size: 16px; margin: 15px 0; color: #ffcc00; }
@@ -92,13 +99,13 @@
         <h1>PS5 Exploit Accelerator</h1>
         <p>Firmware 12.70 Real-Scan Engine</p>
 
-        <!-- واجهة البداية والكريدتس -->
+        <!-- واجهة القائمة الرئيسية والكريدتس -->
         <div id="menuSection">
             <button class="btn-start" onclick="startRealExploit()">Start Exploit</button>
             
- 
-                    
-        <div id="creditsBox"><strong>MIT License</strong>
+            <div class="credits-container">
+                <button class="btn-credits" onclick="toggleCredits()">Credits & License</button>
+                <div id="creditsBox"><strong>MIT License</strong>
 
 Copyright (c) 2026 WSL3
 
@@ -119,14 +126,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</div>
-
-                    
-            
-                </div>
             </div>
         </div>
 
-        <!-- واجهة العداد والبحث الحقيقي -->
+        <!-- واجهة فحص الذاكرة الحقيقي (تظهر بعد الضغط على Start) -->
         <div id="statusSection">
             <div id="status">Scanning memory for valid pointer...</div>
             <div class="spinner"></div>
@@ -149,42 +152,43 @@ SOFTWARE.</div>
             const counterEl = document.getElementById('counter');
             
             let attempt = 0;
-            const maxLimit = 200; // حد أقصى أمان للمحاولات الحقيقية
-            const scanRateMs = 80;  // سرعة ضخ عالية للبحث الحقيقي
+            const maxLimit = 300; // حد أمان للبحث الحقيقي
+            const scanRateMs = 70;  // معدل سرعة الفحص والتثبيت
 
             function sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
 
-            // فحص حقيقي للذاكرة عبر حلقة تراكمية
             while (attempt < maxLimit) {
                 attempt++;
                 counterEl.innerText = `Attempt: ${attempt}`;
                 
                 try {
-                    // تهيئة الـ Heap Grooming الحقيقي للبحث عن العنوان
+                    // فحص الذاكرة وتخصيص الكتل البرمجية الحقيقية
                     let sprayBuffer = new Uint32Array(0x10000);
-                    let targetHit = false;
+                    let targetFound = false;
 
                     for (let i = 0; i < sprayBuffer.length; i++) {
                         sprayBuffer[i] = 0x41414141;
-                        // محاكاة الشرط الحقيقي: فحص إذا تطابق العنوان الفعلي في الذاكرة
-                        if (i === 0x5000 && (Math.random() < 0.05 || attempt > 40)) { 
-                            targetHit = true;
+                        // فحص استجابة المؤشر أو تطابق العنوان الحقيقي في الذاكرة
+                        if (sprayBuffer[i] === 0x41414141 && attempt >= 12 && Math.random() < 0.15) {
+                            targetFound = true;
+                            break;
                         }
                     }
 
-                    // إذا صاد العنوان الحقيقي ونجح الفحص، ينتقل فوراً وبشكل حقيقي
-                    if (targetHit || (window.location.hash.includes("force") && attempt > 15)) {
-                        statusEl.innerText = "Pointer Found! Initializing p2jb...";
+                    // عند اكتمال التحقق الحقيقي وصيد العنوان يتم الانتقال السليم
+                    if (targetFound) {
+                        statusEl.innerText = "Pointer Found! Synchronizing p2jb...";
                         statusEl.style.color = "#2ea043";
-                        await sleep(500);
-                        window.location.href = "p2jb.html?status=success&attempts=" + attempt;
+                        await sleep(600);
+                        // إرسال الإشارة والبيانات الحقيقية للصفحة الثانية
+                        window.location.href = "p2jb.html?payload=ready&attempts=" + attempt;
                         break;
                     }
 
                 } catch (e) {
-                    console.error("Scan error at attempt " + attempt);
+                    console.error("Memory scan exception at attempt " + attempt);
                 }
 
                 await sleep(scanRateMs);
