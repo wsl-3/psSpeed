@@ -1,74 +1,54 @@
-// psSpy.js - Unlimited High-Speed Memory Sniffer with Live Matrix Logs
+let isExploiting = false;
+let attemptCount = 0;
+const maxAttempts = 100; // تقدر تزودها أو تنقصها حسب الحاجة
 
-let timerInterval;
-let secondsElapsed = 0;
-let attempts = 0;
+async function startFastExploit() {
+    if (isExploiting) return;
+    isExploiting = true;
+    attemptCount = 0;
 
-function logToTerminal(message, color = "#3fb950") {
-    const terminal = document.getElementById("terminal");
-    const timestamp = new Date().toLocaleTimeString();
-    terminal.innerHTML += `<span style="color: ${color};">[${timestamp}] ${message}</span><br>`;
-    // التمرير التلقائي لأسفل عشان يشوف أحدث العمليات تنزل تحت
-    terminal.scrollTop = terminal.scrollHeight;
-}
+    logToTerminal("[!] Initializing PS Spy Fast-Spray Engine...", "info");
+    logToTerminal("[*] Target: P2JB Memory Injection (RAM Spray)", "info");
 
-function startFastExploit() {
-    const statusDiv = document.getElementById("status");
-    const timerSpan = document.getElementById("timer");
-    const attemptsSpan = document.getElementById("attemptsCount");
-    const terminal = document.getElementById("terminal");
-
-    // تصفير العدادات واللوحة
-    secondsElapsed = 0;
-    attempts = 0;
-    terminal.innerHTML = "";
-    clearInterval(timerInterval);
-
-    statusDiv.innerText = "Status: Spraying memory & hunting target (Unlimited Mode)...";
-    statusDiv.style.color = "#f0883e";
-    
-    logToTerminal("Initializing memory spray heap...", "#f0883e");
-    logToTerminal("Target listener active. Scanning addresses...", "#58a6ff");
-
-    // تشغيل العداد الزمني المفتوح
-    let startTime = Date.now();
-    timerInterval = setInterval(() => {
-        secondsElapsed = Math.floor((Date.now() - startTime) / 1000);
-        let hrs = Math.floor(secondsElapsed / 3600);
-        let mins = Math.floor((secondsElapsed % 3600) / 60).toString().padStart(2, '0');
-        let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+    // حلقة المحاولات السريعة (تشتغل بالخلفية بدون ما تجمد الواجهة)
+    const exploitInterval = setInterval(async () => {
+        attemptCount++;
         
-        if (hrs > 0) {
-            timerSpan.innerText = `${hrs}:${mins}:${secs}`;
-        } else {
-            timerSpan.innerText = `${mins}:${secs}`;
-        }
-    }, 1000);
-
-    // عملية الفحص بلا حدود مع طباعة تفاصيل كل دفعة في الشاشة الخضراء
-    const quickScan = setInterval(() => {
-        attempts++;
-        attemptsSpan.innerText = attempts;
-
-        // طباعة سجل حي لكل عدد معين من المحاولات أو كل محاولة
-        if (attempts % 5 === 0) {
-            let fakeHexOffset = "0x" + (0x7ffe00000000 + attempts * 0x1000).toString(16);
-            logToTerminal(`Attempt #${attempts} -> Spraying Heap @ Offset: ${fakeHexOffset}`);
-        }
+        // طباعة حالة البحث الحالية على التيرمينال الأخضر
+        logToTerminal(`[Attempt #${attemptCount}] Spraying heap & scanning RAM offsets...`, "process");
 
         try {
-            // فحص هل تحقق النجاح
-            if (typeof pwn !== 'undefined') {
-                clearInterval(quickScan);
-                clearInterval(timerInterval);
-                
-                statusDiv.innerText = `Status: Success! Target acquired in ${timerSpan.innerText} (${attempts} attempts).`;
-                statusDiv.style.color = "#3fb950";
-                logToTerminal(`SUCCESS! Exploit payload injected successfully at attempt #${attempts}`, "#ff007f");
+            // هنا نستدعي دالة الثغرة الحقيقية من ملفات P2JB (مثل دالة الحقن أو الفحص)
+            // تأكد إنك تربطها بالدالة الفعلية الموجودة في ملفات سوني، مثلاً:
+            // let success = runP2JBSingleAttempt(); 
+            
+            // محاكاة للتحقق (استبدلها بالدالة الحقيقية حق الثغرة)
+            let success = checkExploitSuccess(); 
+
+            if (success) {
+                clearInterval(exploitInterval);
+                logToTerminal(`[✔] SUCCESS! RAM Exploit payload injected at attempt #${attemptCount}`, "success");
+                isExploiting = false;
+                // هنا تقدر تفتح قائمة البايلودات أو تنتقل للخطوة التالية
+                return;
             }
-        } catch (e) {
-            console.error("psSpy scan error:", e);
-            logToTerminal(`Error in memory read: ${e.message}`, "#f85149");
+
+        } catch (err) {
+            logToTerminal(`[!] Warning on attempt ${attemptCount}: ${err.message}`, "error");
         }
-    }, 100); // 10 محاولات في الثانية
+
+        // إيقاف آمان لو وصلنا أقصى عدد محاولات عشان الذاكرة لا تمتلئ وتسوي Crash
+        if (attemptCount >= maxAttempts) {
+            clearInterval(exploitInterval);
+            logToTerminal(`[-] Reached max attempts (${maxAttempts}). Please perform a Cold Boot if needed.`, "error");
+            isExploiting = false;
+        }
+
+    }, 100); // 100 ملي ثانية تعني تقريباً 10 محاولات في الثانية الواحدة!
+}
+
+// دالة وهمية للتحقق - استبدلها بدالة الفحص الحقيقية من ملفات P2JB
+function checkExploitSuccess() {
+    // ملفات P2JB الأصلية عادة ترجع علامة نجاح أو تفحص الـ 9021 / elfldr
+    return false; 
 }
