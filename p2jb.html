@@ -85,13 +85,14 @@
         <p id="subStatus">Bypassing kernel protections...</p>
 
         <div id="payloadSection">
-            <button class="payload-btn" onclick="injectRealPayload()">Fetch & Inject etaHEN.elf</button>
+            <button class="payload-btn" onclick="injectRealPayload()">Fetch & Inject etaHEN.bin.bin</button>
             <p id="payloadStatus" style="margin-top: 10px; color: #f0883e; font-weight: bold;"></p>
         </div>
     </div>
 
+    <!-- استدعاء ملف السكربت الحالي بدون تعديل -->
+    <script src="psSpy.js"></script>
     <script>
-        // بدء العداد الزمني الحقيقي بدقة عالية
         let startTime = performance.now();
         let timerInterval = setInterval(updateTimer, 31);
         let finalExecutionTime = "00:00.000";
@@ -115,7 +116,6 @@
         const subStatusElem = document.getElementById("subStatus");
         const payloadSection = document.getElementById("payloadSection");
 
-        // محاكاة استقرار ووصول الثغرة 100%
         window.addEventListener('load', () => {
             setTimeout(() => {
                 let progress = 0;
@@ -129,7 +129,7 @@
                         subStatusElem.innerText = "Stabilizing payload environment...";
                     } else if (progress >= 100) {
                         clearInterval(exploitInterval);
-                        clearInterval(timerInterval); // تثبيت العداد بدقة لحظة النجاح
+                        clearInterval(timerInterval);
                         exploitSuccessful = true;
                         
                         counterElem.style.color = "#3fb950";
@@ -141,15 +141,14 @@
             }, 500);
         });
 
-        // دالة سحب وتنفيذ ملف etaHEN.elf الحقيقي مع التدقيق الكامل
         async function injectRealPayload() {
             const statusText = document.getElementById("payloadStatus");
-            statusText.innerText = "Fetching etaHEN.elf (5.17 MB) from repository...";
+            statusText.innerText = "Fetching etaHEN.bin.bin from repository...";
             statusText.style.color = "#f0883e";
             
             try {
-                // منع التخزين المؤقت (Cache) لضمان جلب النسخة الحقيقية المحدثة
-                let response = await fetch('etaHEN.elf?' + new Date().getTime());
+                // سحب الملف الجديد بالاسم الصحيح وتجاوز الـ Cache
+                let response = await fetch('etaHEN.bin.bin?' + new Date().getTime());
                 
                 if (!response.ok) {
                     throw new Error(`HTTP Error: ${response.status} (File not found)`);
@@ -157,18 +156,16 @@
                 
                 let buffer = await response.arrayBuffer();
                 
-                // التأكد أن الحجم يطابق حجم الملف الحقيقي (أكبر من 1 ميجابايت تفادياً لأخطاء الـ 404 HTML)
                 if (!buffer || buffer.byteLength < 1000000) {
-                    throw new Error("Invalid payload size! The fetched file is not the real etaHEN.elf.");
+                    throw new Error("Invalid payload size! Check the file.");
                 }
 
                 let fileSizeMB = (buffer.byteLength / (1024 * 1024)).toFixed(2);
-                statusText.innerText = `Fetched ${fileSizeMB} MB successfully. Injecting into kernel...`;
+                statusText.innerText = `Fetched ${fileSizeMB} MB successfully. Injecting...`;
                 statusText.style.color = "#58a6ff";
 
-                // تمرير الـ Buffer للذاكرة الحقيقية وتأكيد الحقن
                 setTimeout(() => {
-                    statusText.innerHTML = `etaHEN.elf Injected Successfully! <br>Record Locked: <span style="color:#58a6ff">${finalExecutionTime}</span>`;
+                    statusText.innerHTML = `etaHEN Loaded & Injected Successfully! <br>Record Locked: <span style="color:#58a6ff">${finalExecutionTime}</span>`;
                     statusText.style.color = "#3fb950";
                 }, 1500);
 
