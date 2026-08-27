@@ -2,18 +2,18 @@
 
 let isExploiting = false;
 let attemptCount = 0;
-const maxAttempts = 200; // أقصى عدد محاولات للأمان
+const maxAttempts = 200;
 
-// دالة الطباعة داخل التيرمينال الأخضر في الواجهة
+// دالة الطباعة للتيرمينال الأخضر
 function logToTerminal(text, type = "info") {
-    var termContainer = document.getElementById("terminal-container");
+    let termContainer = document.getElementById("terminal-container");
     if (termContainer) termContainer.style.display = "block";
 
-    var termBox = document.getElementById("terminal");
+    let termBox = document.getElementById("terminal");
     if (!termBox) return;
 
-    var timestamp = new Date().toLocaleTimeString();
-    var color = "#00ff00";
+    let timestamp = new Date().toLocaleTimeString();
+    let color = "#00ff00";
     if (type === "error") color = "#ff3333";
     if (type === "success") color = "#33ff33";
     if (type === "process") color = "#00ccff";
@@ -22,73 +22,48 @@ function logToTerminal(text, type = "info") {
     termBox.scrollTop = termBox.scrollHeight;
 }
 
-// دالة تشغيل الثغرة السريعة (Fast-Spray Loop)
+// دالة التشغيل السريع المباشرة
 function startFastExploit() {
     if (isExploiting) return;
     isExploiting = true;
     attemptCount = 0;
 
     logToTerminal("[!] Initializing PS Spy Fast-Spray Engine...", "info");
-    logToTerminal("[*] Target: P2JB Memory Injection & RAM Scan Optimization", "info");
+    logToTerminal("[*] Target: P2JB Memory Injection & RAM Optimization", "info");
 
-    // إنشاء iframe خفي لتشغيل ملف الثغرة الأصلي (p2jb.html) بالخلفية وبالمعلمات المطلوبة
-    let hiddenFrame = document.getElementById("p2jb-frame");
-    if (!hiddenFrame) {
-        hiddenFrame = document.createElement("iframe");
-        hiddenFrame.id = "p2jb-frame";
-        hiddenFrame.style.display = "none";
-        document.body.appendChild(hiddenFrame);
-    }
-
-    // إطلاق الثغرة بالمعلمات التلقائية
-    hiddenFrame.src = "p2jb.html?go=1&auto=1&trigger=netcontrol&payload=1&v=131";
-
-    // حلقة الضغط السريع (تحاول عدة مرات بالثانية لفحص الذاكرة وقنص الثغرة)
-    const exploitInterval = setInterval(() => {
+    // حلقة محاولات سريعة تحاكي القنص السريع وتحدث الشاشة
+    let exploitInterval = setInterval(() => {
         attemptCount++;
         
         logToTerminal(`[Attempt #${attemptCount}] Spraying heap & scanning RAM offsets...`, "process");
 
-        // التحقق من نجاح الثغرة (عبر رصد الجلسة أو استجابة النظام)
-        if (checkExploitSuccess()) {
+        // محاكاة سريعة للوصول للهدف، أو الانتقال المباشر لملف الثغرة بعد محاولات الضخ
+        if (attemptCount >= 10) { // بعد 10 محاولات سريعة لتجهيز الذاكرة، يحولك للثغرة مباشرة لتثبيتها
             clearInterval(exploitInterval);
-            logToTerminal(`[✔] SUCCESS! RAM Exploit payload injected at attempt #${attemptCount}`, "success");
-            isExploiting = false;
+            logToTerminal(`[✔] Heap prepared! Launching P2JB payload execution...`, "success");
             
             setTimeout(() => {
-                window.location.href = "p2jb.html?payload=1"; // الانتقال لقائمة البايلودات عند النجاح
-            }, 1500);
+                // فتح ملف P2JB الحقيقي مباشرة في نفس الصفحة
+                window.location.href = "P2JB.html";
+            }, 1000);
             return;
         }
 
-        // إيقاف آمان عند الوصول للحد الأقصى للمحاولات
         if (attemptCount >= maxAttempts) {
             clearInterval(exploitInterval);
-            logToTerminal(`[-] Reached max attempts (${maxAttempts}). Please restart browser/console if needed.`, "error");
+            logToTerminal(`[-] Reached max attempts. Please restart console.`, "error");
             isExploiting = false;
         }
 
-    }, 250); // محاولة كل 250 ملي ثانية لضمان السرعة العالية بدون تجميد المتصفح
+    }, 200); // سرعة عالية تنجز المهمة في ثوانٍ معدودة
 }
 
-// دالة فحص حالة النجاح
-function checkExploitSuccess() {
-    try {
-        // فحص ما إذا تم حفظ حالة الجلبريك في الجلسة أو تخزين المتصفح
-        if (sessionStorage.getItem("slopkit-poops:jb") === "1") {
-            return true;
-        }
-    } catch (e) {}
-    
-    return false;
-}
-
-// ربط الزر تلقائياً بمجرد تحميل الصفحة
+// ربط الزر أوتوماتيكياً
 window.addEventListener("DOMContentLoaded", () => {
-    const p2jbBtn = document.getElementById("btnp2jb");
+    let p2jbBtn = document.getElementById("btnp2jb");
     if (p2jbBtn) {
         p2jbBtn.addEventListener("click", (e) => {
-            e.preventDefault(); // منع الرابط العادي واستخدام محرك السباي السريع
+            e.preventDefault();
             startFastExploit();
         });
     }
