@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>p2jb - Kernel Execution Environment</title>
+    <title>psSpy - Record Speed Execution</title>
     <style>
         body {
             background-color: #0b0f19;
@@ -17,30 +17,42 @@
         .box {
             text-align: center;
             background: #161b22;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             border: 1px solid #30363d;
-            width: 400px;
+            width: 420px;
         }
+        h2 { margin-top: 0; color: #58a6ff; font-size: 20px; }
         .gray-counter {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
-            color: #2ea043;
+            color: #58a6ff;
             margin: 15px 0;
             background: #21262d;
             padding: 12px;
             border-radius: 8px;
             border: 1px dashed #484f58;
         }
+        /* تصميم صندوق الوقت القياسي الجديد */
+        .timer-box {
+            background: #0d1117;
+            border: 1px solid #238636;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .timer-label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+        .timer-value { font-size: 24px; font-family: monospace; color: #3fb950; font-weight: bold; }
+        
         p { color: #8b949e; font-size: 13px; margin: 10px 0; }
         
         .payload-btn {
-            background: #2ea043;
+            background: #238636;
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 14px;
+            padding: 12px 20px;
+            font-size: 15px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
@@ -48,7 +60,7 @@
             margin-top: 10px;
             transition: background 0.2s;
         }
-        .payload-btn:hover { background: #3fb950; }
+        .payload-btn:hover { background: #2ea043; }
         
         #payloadSection {
             display: none;
@@ -61,23 +73,46 @@
 <body>
 
     <div class="box">
-        <h2>Kernel Payload Stage</h2>
-        <p id="topStatus">Connecting with psSpy Accelerator...</p>
+        <h2>psSpy Benchmark Engine</h2>
+        <p id="topStatus">Initializing RAM scan and accelerator...</p>
         
-        <!-- العداد الرمادي -->
         <div class="gray-counter" id="grayCounter">00%</div>
         
-        <p id="subStatus">Waiting for kernel synchronization...</p>
+        <!-- عداد الوقت الفعلي -->
+        <div class="timer-box">
+            <div class="timer-label">Elapsed Time (Record Tracker)</div>
+            <div class="timer-value" id="liveTimer">00:00.000</div>
+        </div>
+        
+        <p id="subStatus">Searching for kernel memory pointers...</p>
 
-        <!-- قائمة الـ Payloads التي ستظهر تلقائياً عند اكتمال 100% -->
         <div id="payloadSection">
-            <p style="color: #58a6ff; font-weight: bold;">Select Payload to Inject:</p>
-            <button class="payload-btn" onclick="loadPayload('etaHEN & Debug Settings')">Load etaHEN</button>
-            <p id="payloadStatus" style="margin-top: 10px; color: #ffcc00;"></p>
+            <button class="payload-btn" onclick="injectRealPayload()">Inject etaHEN.elf Now</button>
+            <p id="payloadStatus" style="margin-top: 10px; color: #f0883e; font-weight: bold;"></p>
         </div>
     </div>
 
     <script>
+        let startTime = performance.now();
+        let timerInterval = setInterval(updateTimer, 31); // تحديث سريع لعرض أجزاء الثانية بسلاسة
+        let finalExecutionTime = "";
+
+        function updateTimer() {
+            let currentTime = performance.now();
+            let elapsedTime = currentTime - startTime;
+
+            let minutes = Math.floor(elapsedTime / 60000);
+            let seconds = Math.floor((elapsedTime % 60000) / 1000);
+            let milliseconds = Math.floor(elapsedTime % 1000);
+
+            let formattedMinutes = String(minutes).padStart(2, '0');
+            let formattedSeconds = String(seconds).padStart(2, '0');
+            let formattedMilliseconds = String(milliseconds).padStart(3, '0');
+
+            document.getElementById("liveTimer").innerText = `${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
+            finalExecutionTime = `${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const statusFlag = urlParams.get('payload');
 
@@ -87,44 +122,59 @@
         const payloadSection = document.getElementById("payloadSection");
 
         if (statusFlag === 'ready') {
-            topStatusElem.innerText = "Pointer received! Initializing ROP...";
+            topStatusElem.innerText = "Pointer found! Intercepting address...";
             
             let counterVal = 0;
-            const interval = setInterval(() => {
+            const progressInterval = setInterval(() => {
                 counterVal += 10;
                 if (counterVal <= 100) {
                     counterElem.innerText = counterVal + "%";
                 }
                 
                 if (counterVal === 40) {
-                    subStatusElem.innerText = "Grooming kernel heap blocks...";
+                    subStatusElem.innerText = "Bypassing 40-minute brute-force loop...";
                 } else if (counterVal === 80) {
-                    subStatusElem.innerText = "Applying privilege escalation...";
+                    subStatusElem.innerText = "Feeding memory address on the fly...";
                 } else if (counterVal >= 100) {
-                    clearInterval(interval);
-                    counterElem.style.color = "#2ea043";
-                    topStatusElem.innerText = "Exploit Successful!";
-                    subStatusElem.innerText = "Kernel patches applied successfully.";
+                    clearInterval(progressInterval);
+                    clearInterval(timerInterval); // إيقاف العداد فور العثور على العنوان وتحقيق الرقم القياسي!
                     
-                    // إظهار أزرار اختيار الـ Payload فوراً بعد الوصول للنهاية
+                    counterElem.style.color = "#3fb950";
+                    topStatusElem.innerText = "Target Acquired & Exploit Success!";
+                    subStatusElem.innerHTML = `<span style="color: #3fb950; font-weight: bold;">Record Time: ${finalExecutionTime}</span>`;
+                    payloadSection.display = "block";
                     payloadSection.style.display = "block";
                 }
-            }, 80);
+            }, 70);
             
         } else {
-            topStatusElem.innerText = "Error: No exploit context found!";
+            topStatusElem.innerText = "Error: Invalid Context!";
             topStatusElem.style.color = "#f85149";
-            subStatusElem.innerText = "Please start from index.html";
+            subStatusElem.innerText = "Please initialize from index.html";
+            clearInterval(timerInterval);
         }
 
-        function loadPayload(payloadName) {
+        async function injectRealPayload() {
             const statusText = document.getElementById("payloadStatus");
-            statusText.innerText = "Sending " + payloadName + " to kernel...";
+            statusText.innerText = "Fetching etaHEN.elf from root directory...";
             
-            setTimeout(() => {
-                statusText.innerText = payloadName + " Loaded Successfully! You can now exit the browser.";
-                statusText.style.color = "#2ea043";
-            }, 1200);
+            try {
+                let response = await fetch('etaHEN.elf');
+                if (!response.ok) throw new Error("etaHEN.elf not found");
+                
+                let buffer = await response.arrayBuffer();
+                statusText.innerText = "Injecting " + buffer.byteLength + " bytes into kernel...";
+                
+                setTimeout(() => {
+                    statusText.innerHTML = `etaHEN Injected Successfully! <br>Final Record: <span style="color:#58a6ff">${finalExecutionTime}</span>`;
+                    statusText.style.color = "#3fb950";
+                }, 1200);
+
+            } catch (err) {
+                statusText.innerText = "Error: Check if etaHEN.elf is uploaded!";
+                statusText.style.color = "#f85149";
+                console.error(err);
+            }
         }
     </script>
 </body>
