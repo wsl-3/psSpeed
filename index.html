@@ -71,9 +71,9 @@
                         if (timerInterval) clearInterval(timerInterval);
                         logToTerminal(`[✔] Memory corruption achieved at attempt #${attemptCount}!`, "success");
                         let statusElem = document.getElementById("status");
-                        if (statusElem) statusElem.innerText = "Status: Exploit Successful! Loading P2JB...";
+                        if (statusElem) statusElem.innerText = "Status: Exploit Successful! Loading p2jb...";
                         setTimeout(() => {
-                            window.location.href = "P2JB.html";
+                            window.location.href = "p2jb.html";
                         }, 1000);
                         return;
                     }
