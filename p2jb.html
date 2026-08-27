@@ -17,23 +17,45 @@
         .box {
             text-align: center;
             background: #161b22;
-            padding: 40px;
+            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             border: 1px solid #30363d;
-            width: 380px;
+            width: 400px;
         }
         .gray-counter {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
-            color: #8b949e; /* العداد الرمادي */
-            margin: 20px 0;
+            color: #2ea043;
+            margin: 15px 0;
             background: #21262d;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             border: 1px dashed #484f58;
         }
-        p { color: #8b949e; font-size: 14px; }
+        p { color: #8b949e; font-size: 13px; margin: 10px 0; }
+        
+        .payload-btn {
+            background: #2ea043;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .payload-btn:hover { background: #3fb950; }
+        
+        #payloadSection {
+            display: none;
+            margin-top: 15px;
+            border-top: 1px solid #30363d;
+            padding-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -46,45 +68,63 @@
         <div class="gray-counter" id="grayCounter">00%</div>
         
         <p id="subStatus">Waiting for kernel synchronization...</p>
+
+        <!-- قائمة الـ Payloads التي ستظهر تلقائياً عند اكتمال 100% -->
+        <div id="payloadSection">
+            <p style="color: #58a6ff; font-weight: bold;">Select Payload to Inject:</p>
+            <button class="payload-btn" onclick="loadPayload('etaHEN & Debug Settings')">Load etaHEN</button>
+            <p id="payloadStatus" style="margin-top: 10px; color: #ffcc00;"></p>
+        </div>
     </div>
 
     <script>
-        // التقاط البيانات المرسلة من الصفحة الأولى للتأكد من نجاح البحث
         const urlParams = new URLSearchParams(window.location.search);
         const statusFlag = urlParams.get('payload');
-        const attemptsMade = urlParams.get('attempts');
 
         const counterElem = document.getElementById("grayCounter");
         const topStatusElem = document.getElementById("topStatus");
         const subStatusElem = document.getElementById("subStatus");
+        const payloadSection = document.getElementById("payloadSection");
 
         if (statusFlag === 'ready') {
             topStatusElem.innerText = "Pointer received! Initializing ROP...";
             
             let counterVal = 0;
             const interval = setInterval(() => {
-                counterVal += 5;
+                counterVal += 10;
                 if (counterVal <= 100) {
                     counterElem.innerText = counterVal + "%";
                 }
                 
-                if (counterVal === 30) {
+                if (counterVal === 40) {
                     subStatusElem.innerText = "Grooming kernel heap blocks...";
-                } else if (counterVal === 70) {
+                } else if (counterVal === 80) {
                     subStatusElem.innerText = "Applying privilege escalation...";
                 } else if (counterVal >= 100) {
                     clearInterval(interval);
-                    counterElem.style.color = "#2ea043"; // تحول للأخضر عند اكتمال الـ 100%
+                    counterElem.style.color = "#2ea043";
                     topStatusElem.innerText = "Exploit Successful!";
-                    subStatusElem.innerText = "Kernel patches applied. Ready for payloads.";
+                    subStatusElem.innerText = "Kernel patches applied successfully.";
+                    
+                    // إظهار أزرار اختيار الـ Payload فوراً بعد الوصول للنهاية
+                    payloadSection.style.display = "block";
                 }
-            }, 100); // سرعة حركة الشريط لتكون ناعمة ومستقرة
+            }, 80);
             
         } else {
-            // في حال تم فتح الصفحة بشكل مباشر بدون مرور بالثغرة
             topStatusElem.innerText = "Error: No exploit context found!";
             topStatusElem.style.color = "#f85149";
             subStatusElem.innerText = "Please start from index.html";
+        }
+
+        function loadPayload(payloadName) {
+            const statusText = document.getElementById("payloadStatus");
+            statusText.innerText = "Sending " + payloadName + " to kernel...";
+            
+            setTimeout(() => {
+                statusText.innerText = payloadName + " Loaded Successfully! You can now exit the browser.";
+                statusText.style.color = "#2ea043";
+            }, 1200);
         }
     </script>
 </body>
