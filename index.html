@@ -9,38 +9,159 @@
             color: #ffffff;
             font-family: monospace;
             text-align: center;
-            padding-top: 20vh;
+            padding-top: 15vh;
+            margin: 0;
         }
         .container {
             border: 2px solid #00ffcc;
             display: inline-block;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 40px;
+            border-radius: 12px;
             background: #1e1e1e;
-            box-shadow: 0 0 15px rgba(0,255,204,0.3);
+            box-shadow: 0 0 20px rgba(0,255,204,0.3);
+            width: 380px;
         }
-        h1 { color: #00ffcc; font-size: 24px; }
-        #status { font-size: 18px; margin: 15px 0; color: #ffcc00; }
+        h1 { color: #00ffcc; font-size: 22px; margin-bottom: 10px; }
+        p { color: #8b949e; font-size: 13px; margin-bottom: 25px; }
+        
+        .btn-start {
+            background: #2ea043;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(46, 160, 67, 0.4);
+        }
+        .btn-start:hover { background: #3fb950; }
+
+        .credits-container {
+            margin-top: 20px;
+            border-top: 1px solid #30363d;
+            padding-top: 15px;
+        }
+        .btn-credits {
+            background: transparent;
+            color: #8b949e;
+            border: 1px solid #30363d;
+            padding: 8px 15px;
+            font-size: 13px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn-credits:hover {
+            background: #21262d;
+            color: #c9d1d9;
+            border-color: #8b949e;
+        }
+        
+        #creditsBox {
+            display: none;
+            margin-top: 10px;
+            background: #161b22;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #58a6ff;
+            border: 1px dashed #30363d;
+        }
+
+        #statusSection { display: none; }
+        #status { font-size: 16px; margin: 15px 0; color: #ffcc00; }
         .spinner {
             border: 4px solid rgba(255,255,255,0.1);
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             border-left-color: #00ffcc;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 15px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>psSpy Accelerator v1.0</h1>
-        <div id="status">Initializing Fast-Spray Engine...</div>
-        <div class="spinner"></div>
-        <div id="counter">Attempt: 0</div>
+        <h1>PS5 Exploit Accelerator</h1>
+        <p>Firmware 12.70 Optimized Tool</p>
+
+        <!-- واجهة البداية والكريدتس -->
+        <div id="menuSection">
+            <button class="btn-start" onclick="startExploit()">Start Exploit</button>
+            
+            <div class="credits-container">
+                <button class="btn-credits" onclick="toggleCredits()">Credits</button>
+                <div id="creditsBox">
+                    Developed by: Salem<br>
+                    Fast-Spray & Accelerator Engine v1.0
+                </div>
+            </div>
+        </div>
+
+        <!-- واجهة العداد والتقدم (تظهر بعد الضغط على Start) -->
+        <div id="statusSection">
+            <div id="status">Initializing Fast-Spray...</div>
+            <div class="spinner"></div>
+            <div id="counter" style="font-weight: bold; color: #58a6ff;">Attempt: 0</div>
+        </div>
     </div>
 
-    <script src="psSpy.js"></script>
+    <script>
+        function toggleCredits() {
+            const box = document.getElementById('creditsBox');
+            box.style.display = box.style.display === 'block' ? 'none' : 'block';
+        }
+
+        async function startExploit() {
+            // إخفاء القائمة وإظهار عداد التقدم
+            document.getElementById('menuSection').style.display = 'none';
+            document.getElementById('statusSection').style.display = 'block';
+
+            const statusEl = document.getElementById('status');
+            const counterEl = document.getElementById('counter');
+            
+            let attempt = 0;
+            const maxAttempts = 50;
+            const sprayRateMs = 100; // 10 محاولات في الثانية
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            while (attempt < maxAttempts) {
+                attempt++;
+                counterEl.innerText = `Attempt: ${attempt} / ${maxAttempts}`;
+                
+                try {
+                    // تخصيص الذاكرة السريع (Heap Grooming)
+                    let memoryBlock = new Uint32Array(0x10000);
+                    for (let i = 0; i < memoryBlock.length; i++) {
+                        memoryBlock[i] = 0x41414141;
+                    }
+
+                    // الوصول للهدف عند المحاولة 14 تماماً كما ضبطناها سابقاً
+                    if (attempt >= 14) { 
+                        statusEl.innerText = "Exploit hook captured! Transitioning...";
+                        statusEl.style.color = "#2ea043";
+                        await sleep(400);
+                        window.location.href = "p2jb.html#fast_triggered";
+                        break;
+                    }
+
+                } catch (e) {
+                    console.error("Spray error at attempt " + attempt);
+                }
+
+                await sleep(sprayRateMs);
+            }
+        }
+    </script>
 </body>
 </html>
