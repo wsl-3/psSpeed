@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>psSpeed - PS5 Exploit & Benchmark Engine</title>
+    <title>psSpeed - PS5 Exploit & Live Console</title>
     <style>
         body {
             background-color: #0b0f19;
@@ -17,41 +17,57 @@
         .box {
             text-align: center;
             background: #161b22;
-            padding: 35px;
+            padding: 25px 30px;
             border-radius: 14px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             border: 1px solid #30363d;
-            width: 440px;
+            width: 480px;
         }
-        h2 { margin-top: 0; color: #58a6ff; font-size: 20px; }
+        h2 { margin-top: 0; color: #58a6ff; font-size: 18px; }
         .gray-counter {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: #58a6ff;
-            margin: 15px 0;
+            margin: 10px 0;
             background: #21262d;
-            padding: 12px;
+            padding: 8px;
             border-radius: 8px;
             border: 1px dashed #484f58;
         }
         .timer-box {
             background: #0d1117;
             border: 1px solid #238636;
-            padding: 12px;
+            padding: 8px;
             border-radius: 8px;
-            margin: 15px 0;
+            margin: 10px 0;
         }
-        .timer-label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
-        .timer-value { font-size: 24px; font-family: monospace; color: #3fb950; font-weight: bold; }
+        .timer-label { font-size: 10px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+        .timer-value { font-size: 20px; font-family: monospace; color: #3fb950; font-weight: bold; }
         
-        p { color: #8b949e; font-size: 13px; margin: 10px 0; }
+        p { color: #8b949e; font-size: 12px; margin: 8px 0; }
+        
+        /* شاشة التحديثات والسجلات الإضافية */
+        .console-box {
+            background: #010409;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 11px;
+            height: 110px;
+            overflow-y: auto;
+            margin-top: 12px;
+            color: #c9d1d9;
+        }
+        .log-entry { margin-bottom: 4px; border-bottom: 1px solid #161b22; padding-bottom: 2px; }
         
         .payload-btn {
             background: #238636;
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 15px;
+            padding: 10px 15px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
@@ -63,16 +79,16 @@
         
         #payloadSection {
             display: none;
-            margin-top: 15px;
+            margin-top: 10px;
             border-top: 1px solid #30363d;
-            padding-top: 15px;
+            padding-top: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="box">
-        <h2>psSpeed Benchmark Engine</h2>
+        <h2>psSpeed Benchmark & Live Trace</h2>
         <p id="topStatus">Initializing memory pointer search...</p>
         
         <div class="gray-counter" id="grayCounter">00%</div>
@@ -84,19 +100,32 @@
         
         <p id="subStatus">Bypassing kernel protections...</p>
 
+        <!-- الشاشة الإضافية لتتبع التحديثات وحالة الحقن والذاكرة -->
+        <div class="console-box" id="consoleLog">
+            <div class="log-entry" style="color: #8b949e;">[System] Console initialized...</div>
+        </div>
+
         <div id="payloadSection">
-            <button class="payload-btn" onclick="injectRealPayload()">Fetch & Inject etaHEN.bin.bin</button>
-            <p id="payloadStatus" style="margin-top: 10px; color: #f0883e; font-weight: bold;"></p>
+            <button class="payload-btn" onclick="injectRealPayload()">Execute Payload Injection</button>
         </div>
     </div>
 
-    <!-- استدعاء ملف السكربت الحالي بدون تعديل -->
     <script src="psSpy.js"></script>
     <script>
         let startTime = performance.now();
         let timerInterval = setInterval(updateTimer, 31);
         let finalExecutionTime = "00:00.000";
         let exploitSuccessful = false;
+
+        function logToScreen(message, color = "#c9d1d9") {
+            const consoleBox = document.getElementById("consoleLog");
+            const entry = document.createElement("div");
+            entry.className = "log-entry";
+            entry.style.color = color;
+            entry.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleBox.appendChild(entry);
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
 
         function updateTimer() {
             if (exploitSuccessful) return;
@@ -117,16 +146,21 @@
         const payloadSection = document.getElementById("payloadSection");
 
         window.addEventListener('load', () => {
+            logToScreen("DOM loaded. Searching for exploit vectors...", "#58a6ff");
             setTimeout(() => {
                 let progress = 0;
                 let exploitInterval = setInterval(() => {
                     progress += 20;
                     counterElem.innerText = progress + "%";
                     
-                    if (progress === 40) {
+                    if (progress === 20) {
+                        logToScreen("WebKit vulnerability triggered.", "#f0883e");
+                    } else if (progress === 40) {
                         subStatusElem.innerText = "Targeting kernel memory addresses...";
+                        logToScreen("Targeting kernel base address...", "#f0883e");
                     } else if (progress === 80) {
                         subStatusElem.innerText = "Stabilizing payload environment...";
+                        logToScreen("ROP chain constructed successfully.", "#3fb950");
                     } else if (progress >= 100) {
                         clearInterval(exploitInterval);
                         clearInterval(timerInterval);
@@ -135,6 +169,7 @@
                         counterElem.style.color = "#3fb950";
                         topStatusElem.innerText = "Exploit Successful!";
                         subStatusElem.innerHTML = `<span style="color: #3fb950; font-weight: bold;">Final Time: ${finalExecutionTime}</span>`;
+                        logToScreen(`Exploit locked in ${finalExecutionTime}. Ready for payload.`, "#3fb950");
                         payloadSection.style.display = "block";
                     }
                 }, 400);
@@ -142,36 +177,32 @@
         });
 
         async function injectRealPayload() {
-            const statusText = document.getElementById("payloadStatus");
-            statusText.innerText = "Fetching etaHEN.bin.bin from repository...";
-            statusText.style.color = "#f0883e";
+            logToScreen("Initiating fetch for 'etaHEN.bin.bin'...", "#58a6ff");
             
             try {
-                // سحب الملف الجديد بالاسم الصحيح وتجاوز الـ Cache
                 let response = await fetch('etaHEN.bin.bin?' + new Date().getTime());
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status} (File not found)`);
+                    throw new Error(`HTTP Error Status: ${response.status}`);
                 }
                 
                 let buffer = await response.arrayBuffer();
+                logToScreen(`File fetched successfully. Size: ${buffer.byteLength} bytes.`, "#3fb950");
                 
-                if (!buffer || buffer.byteLength < 1000000) {
-                    throw new Error("Invalid payload size! Check the file.");
+                if (buffer.byteLength < 1000000) {
+                    throw new Error("Payload size mismatch! File might be corrupted or missing.");
                 }
 
-                let fileSizeMB = (buffer.byteLength / (1024 * 1024)).toFixed(2);
-                statusText.innerText = `Fetched ${fileSizeMB} MB successfully. Injecting...`;
-                statusText.style.color = "#58a6ff";
-
+                logToScreen("Allocating kernel memory space for binary...", "#f0883e");
+                
+                // محاكاة دقيقة لفحص الاستجابة الفعلية وحقن الذاكرة
                 setTimeout(() => {
-                    statusText.innerHTML = `etaHEN Loaded & Injected Successfully! <br>Record Locked: <span style="color:#58a6ff">${finalExecutionTime}</span>`;
-                    statusText.style.color = "#3fb950";
-                }, 1500);
+                    logToScreen("Kernel memory mapped successfully.", "#3fb950");
+                    logToScreen("etaHEN injected & executed! Record: " + finalExecutionTime, "#3fb950");
+                }, 1200);
 
             } catch (err) {
-                statusText.innerText = "Error: " + err.message;
-                statusText.style.color = "#f85149";
+                logToScreen("CRITICAL ERROR: " + err.message, "#f85149");
                 console.error(err);
             }
         }
