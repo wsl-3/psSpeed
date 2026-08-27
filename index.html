@@ -3,56 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PS5 Lightning Exploit & psSpy UI</title>
+    <title>PS5 Lightning Exploit UI - Pro Edition</title>
     <style>
-        body {
-            background-color: #0b0e14;
-            color: #e0e6ed;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            text-align: center;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding-top: 80px;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
         .container {
-            max-width: 600px;
-            margin: auto;
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border: 1px solid #30363d;
+            border-radius: 16px;
             padding: 40px;
-            background: #161b22;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            width: 550px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(88, 166, 255, 0.1);
+            text-align: center;
         }
-        h1 { color: #58a6ff; font-size: 26px; margin-bottom: 10px; }
-        p { color: #8b949e; font-size: 15px; margin-bottom: 30px; }
-        .btn {
-            background-color: #238636;
+        h1 {
+            font-size: 26px;
+            color: #58a6ff;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        p.subtitle {
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 30px;
+        }
+        .btn-run {
+            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
             color: white;
-            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            padding: 16px 32px;
             font-size: 18px;
             font-weight: bold;
-            border: none;
-            border-radius: 6px;
             cursor: pointer;
-            transition: background 0.2s;
             width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(35, 134, 54, 0.4);
+            outline: none;
         }
-        .btn:hover { background-color: #2ea043; }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #8b949e;
+        .btn-run:hover {
+            background: linear-gradient(135deg, #2ea043 0%, #3fb950 100%);
+            box-shadow: 0 6px 20px rgba(63, 185, 80, 0.6);
+            transform: translateY(-2px);
         }
-        .stats span { color: #58a6ff; font-weight: bold; }
-        #status {
-            margin-top: 20px;
+        .status-box {
+            background-color: #010409;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 25px;
             font-size: 15px;
             font-weight: 500;
-            color: #f0883e;
-            padding: 12px;
-            background: #0d1117;
-            border-radius: 6px;
+            color: #c9d1d9;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stats-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 15px;
+        }
+        .stat-card {
+            background-color: #161b22;
             border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 15px;
+            flex: 1;
+            text-align: center;
+        }
+        .stat-card span {
+            display: block;
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .stat-card strong {
+            font-size: 20px;
+            color: #58a6ff;
         }
     </style>
 </head>
@@ -60,24 +104,25 @@
 
     <div class="container">
         <h1>PS5 Lightning Exploit UI</h1>
-        <p>Optimized with live psSpy timer & tracking mechanism.</p>
+        <p class="subtitle">High-Speed Unlimited Memory Sniffer & Kernel Injector</p>
         
-        <button class="btn" onclick="startFastExploit()">Run Exploit & Track</button>
+        <button class="btn-run" onclick="startFastExploit()">Run Exploit & Track</button>
         
-        <div id="status">Status: Ready to initialize...</div>
+        <div id="status" class="status-box">Status: Ready to initialize...</div>
         
-        <div class="stats">
-            <div>Elapsed Time: <span id="timer">00:00</span></div>
-            <div>Attempts: <span id="attemptsCount">0</span></div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span>Elapsed Time</span>
+                <strong id="timer">00:00</strong>
+            </div>
+            <div class="stat-card">
+                <span>Attempts</span>
+                <strong id="attemptsCount">0</strong>
+            </div>
         </div>
     </div>
 
-    <!-- Core exploit scripts loaded remotely -->
-    <script src="https://soniciso1.github.io/pooP2JB/mem.js"></script>
-    <script src="https://soniciso1.github.io/pooP2JB/main.js"></script>
-
-    <!-- Your optimized psSpy script -->
+    <!-- ربط ملف الـ JavaScript البرمجي -->
     <script src="psSpy.js"></script>
-
 </body>
 </html>
