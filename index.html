@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>PS5 Exploit - Custom psSpy UI</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        h1 { color: #0070d1; }
+        .btn {
+            background-color: #0070d1;
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn:hover { background-color: #0056b3; }
+        #status { margin-top: 20px; font-size: 18px; color: #ffcc00; }
+    </style>
+</head>
+<body>
+
+    <h1>مرحباً بك في واجهة psSpy المخصصة</h1>
+    <p>جارٍ سحب ملفات الثغرة الأساسية وتجهيز الأداة لاختصار وقت الـ 40 دقيقة...</p>
+    
+    <button class="btn" onclick="startExploit()">بدء الجلبريك والأداة</button>
+    <div id="status">جاهز للبدء...</div>
+
+    <!-- سحب ملفات الثغرة الأساسية من مستودع سونيك من الخلفية -->
+    <script src="https://soniciso1.github.io/pooP2JB/mem.js"></script>
+    <script src="https://soniciso1.github.io/pooP2JB/main.js"></script>
+
+    <!-- أداة psSpy الخاصة بك لالتقاط العنوان وتسريع العملية -->
+    <script src="psSpy.js"></script>
+
+    <script>
+        function startExploit() {
+            document.getElementById("status").innerText = "جاري تشغيل الاستغلال وراقب الذاكرة...";
+            // استدعاء الدوال الأساسية من ملفات سونيك وتفعيل psSpy هنا
+        }
+    </script>
+
+</body>
+</html>
