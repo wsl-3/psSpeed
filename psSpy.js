@@ -43,8 +43,8 @@ function startFastExploit() {
             logToTerminal(`[✔] Heap prepared! Launching P2JB payload execution...`, "success");
             
             setTimeout(() => {
-                // فتح ملف P2JB الحقيقي مباشرة في نفس الصفحة
-                window.location.href = "P2JB.html";
+                // فتح ملف p2jb الحقيقي مباشرة في نفس الصفحة
+                window.location.href = "p2jb.html";
             }, 1000);
             return;
         }
