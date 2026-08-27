@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PS5 Lightning Exploit UI - Pro Edition</title>
+    <title>PS5 Lightning Exploit UI - Hacker Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -24,79 +24,88 @@
             background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
             border: 1px solid #30363d;
             border-radius: 16px;
-            padding: 40px;
-            width: 550px;
+            padding: 30px;
+            width: 600px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(88, 166, 255, 0.1);
             text-align: center;
         }
         h1 {
-            font-size: 26px;
+            font-size: 24px;
             color: #58a6ff;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
+            margin-bottom: 6px;
         }
         p.subtitle {
-            font-size: 13px;
+            font-size: 12px;
             color: #8b949e;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .btn-run {
             background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 16px 32px;
-            font-size: 18px;
+            padding: 14px 28px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(35, 134, 54, 0.4);
             outline: none;
+            margin-bottom: 15px;
         }
         .btn-run:hover {
-            background: linear-gradient(135deg, #2ea043 0%, #3fb950 100%);
-            box-shadow: 0 6px 20px rgba(63, 185, 80, 0.6);
+            background: linear-gradient(135deg, #2ea043 100%, #3fb950 100%);
             transform: translateY(-2px);
         }
         .status-box {
             background-color: #010409;
             border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 16px;
-            margin-top: 25px;
-            font-size: 15px;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
             font-weight: 500;
             color: #c9d1d9;
-            min-height: 55px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .stats-grid {
             display: flex;
             justify-content: space-between;
-            margin-top: 25px;
-            gap: 15px;
+            margin-bottom: 15px;
+            gap: 10px;
         }
         .stat-card {
             background-color: #161b22;
             border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 10px;
             flex: 1;
             text-align: center;
         }
         .stat-card span {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             color: #8b949e;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             text-transform: uppercase;
         }
         .stat-card strong {
-            font-size: 20px;
+            font-size: 18px;
             color: #58a6ff;
+        }
+        /* نافذة التيرمينال الخضراء اللي تنزل لتحت */
+        .terminal-box {
+            background-color: #000000;
+            border: 1px solid #238636;
+            border-radius: 8px;
+            height: 140px;
+            padding: 10px;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            color: #3fb950;
+            overflow-y: auto;
+            scroll-behavior: smooth;
         }
     </style>
 </head>
@@ -104,7 +113,7 @@
 
     <div class="container">
         <h1>PS5 Lightning Exploit UI</h1>
-        <p class="subtitle">High-Speed Unlimited Memory Sniffer & Kernel Injector</p>
+        <p class="subtitle">High-Speed Unlimited Memory Sniffer & Live Matrix Log</p>
         
         <button class="btn-run" onclick="startFastExploit()">Run Exploit & Track</button>
         
@@ -120,9 +129,13 @@
                 <strong id="attemptsCount">0</strong>
             </div>
         </div>
+
+        <!-- شاشة العمليات الخضراء -->
+        <div id="terminal" class="terminal-box">
+            [System] Waiting for user action...<br>
+        </div>
     </div>
 
-    <!-- ربط ملف الـ JavaScript البرمجي -->
     <script src="psSpy.js"></script>
 </body>
 </html>
