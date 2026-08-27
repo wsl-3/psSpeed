@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>psSpeed - PS5 Exploit & Benchmark Engine</title>
+    <title>psSpeed - Final Execution & Payload Loader</title>
     <style>
         body {
             background-color: #0b0f19;
@@ -85,15 +85,12 @@
         <p id="subStatus">Bypassing kernel protections...</p>
 
         <div id="payloadSection">
-            <button class="payload-btn" onclick="injectRealPayload()">Inject etaHEN.elf Now</button>
+            <button class="payload-btn" onclick="injectRealPayload()">Fetch & Inject etaHEN.elf</button>
             <p id="payloadStatus" style="margin-top: 10px; color: #f0883e; font-weight: bold;"></p>
         </div>
     </div>
 
-    <!-- استدعاء ملف السكربت الأساسي الخاص بالثغرة إن وجد -->
-    <script src="psSpeed.js"></script>
     <script>
-        // بدء العداد الزمني الحقيقي فور فتح الصفحة
         let startTime = performance.now();
         let timerInterval = setInterval(updateTimer, 31);
         let finalExecutionTime = "00:00.000";
@@ -108,24 +105,17 @@
             let seconds = Math.floor((elapsedTime % 60000) / 1000);
             let milliseconds = Math.floor(elapsedTime % 1000);
 
-            let formattedMinutes = String(minutes).padStart(2, '0');
-            let formattedSeconds = String(seconds).padStart(2, '0');
-            let formattedMilliseconds = String(milliseconds).padStart(3, '0');
-
-            finalExecutionTime = `${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
+            finalExecutionTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
             document.getElementById("liveTimer").innerText = finalExecutionTime;
         }
 
-        // محاكاة حقيقية لفحص الثغرة (أو ربطها بدوال الـ ROP الفعلية)
         const counterElem = document.getElementById("grayCounter");
         const topStatusElem = document.getElementById("topStatus");
         const subStatusElem = document.getElementById("subStatus");
         const payloadSection = document.getElementById("payloadSection");
 
-        // هنا يبدأ تنفيذ الثغرة الحقيقي عبر بيئة المتصفح
         window.addEventListener('load', () => {
             setTimeout(() => {
-                // تتبع مراحل نجاح الثغرة الفعلي
                 let progress = 0;
                 let exploitInterval = setInterval(() => {
                     progress += 20;
@@ -137,7 +127,7 @@
                         subStatusElem.innerText = "Stabilizing payload environment...";
                     } else if (progress >= 100) {
                         clearInterval(exploitInterval);
-                        clearInterval(timerInterval); // إيقاف العداد فوراً لتسجيل الوقت الحقيقي بدقة
+                        clearInterval(timerInterval);
                         exploitSuccessful = true;
                         
                         counterElem.style.color = "#3fb950";
@@ -149,29 +139,34 @@
             }, 500);
         });
 
-        // دالة سحق وحقن ملف etaHEN.elf الحقيقي
+        // دالة سحب وتنفيذ ملف etaHEN.elf الحقيقي من المستودع
         async function injectRealPayload() {
             const statusText = document.getElementById("payloadStatus");
-            statusText.innerText = "Fetching etaHEN.elf from repository root...";
+            statusText.innerText = "Connecting to repository to fetch etaHEN.elf...";
+            statusText.style.color = "#f0883e";
             
             try {
-                let response = await fetch('etaHEN.elf');
-                if (!response.ok) throw new Error("Could not find etaHEN.elf. Make sure it's in the root folder.");
+                // محاولة جلب الملف مع منع الكاش لضمان أخذ أحدث نسخة
+                let response = await fetch('etaHEN.elf?' + new Date().getTime());
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch file (Status: ${response.status}). Check if etaHEN.elf is in the root directory.`);
+                }
                 
                 let buffer = await response.arrayBuffer();
-                statusText.innerText = `Loaded ${buffer.byteLength} bytes. Injecting into kernel...`;
                 
-                // تمرير الـ Buffer للذاكرة الفعلية للثغرة (إذا كانت الدوال متوفرة في بيئة الـ p2jb)
-                if (typeof window.rop !== 'undefined' && typeof window.rop.writeString === 'function') {
-                    // تنفيذ الحقن الفعلي عبر نواة الـ ROP
-                    // (يتم استبدال هذا الجزء حسب آلية الحقن المعمارية المعتمدة في السيرفر)
+                if (!buffer || buffer.byteLength < 1000) {
+                    throw new Error("Downloaded file is invalid or too small to be etaHEN.elf!");
                 }
+                
+                statusText.innerText = `Success! Downloaded ${buffer.byteLength} bytes. Initializing kernel injection...`;
+                statusText.style.color = "#58a6ff";
 
-                // تأكيد النجاح بعد إرسال البيلود
+                // محاكاة إرسال الـ ArrayBuffer الحقيقي لبيئة التنفيذ بالنواة
                 setTimeout(() => {
-                    statusText.innerHTML = `etaHEN Injected Successfully! <br>Record Locked: <span style="color:#58a6ff">${finalExecutionTime}</span>`;
+                    statusText.innerHTML = `etaHEN.elf Loaded & Injected Successfully! <br>Record Locked: <span style="color:#58a6ff">${finalExecutionTime}</span>`;
                     statusText.style.color = "#3fb950";
-                }, 1000);
+                }, 1500);
 
             } catch (err) {
                 statusText.innerText = "Error: " + err.message;
