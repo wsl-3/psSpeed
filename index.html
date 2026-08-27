@@ -1,44 +1,68 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PS5 Exploit - Custom psSpy UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS5 Custom Exploit & psSpy UI</title>
     <style>
         body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: sans-serif;
+            background-color: #0b0e14;
+            color: #e0e6ed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             text-align: center;
-            padding-top: 50px;
+            margin: 0;
+            padding-top: 80px;
         }
-        h1 { color: #0070d1; }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 40px;
+            background: #161b22;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        h1 { color: #58a6ff; font-size: 26px; margin-bottom: 10px; }
+        p { color: #8b949e; font-size: 15px; margin-bottom: 30px; }
         .btn {
-            background-color: #0070d1;
+            background-color: #238636;
             color: white;
-            padding: 15px 30px;
-            font-size: 20px;
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: bold;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            margin-top: 20px;
+            transition: background 0.2s;
+            width: 100%;
         }
-        .btn:hover { background-color: #0056b3; }
-        #status { margin-top: 20px; font-size: 18px; color: #ffcc00; }
+        .btn:hover { background-color: #2ea043; }
+        #status {
+            margin-top: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #f0883e;
+            padding: 10px;
+            background: #0d1117;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>مرحباً بك في واجهة psSpy المخصصة</h1>
-    <p>هنا التصميم الخاص بك يعمل بكامل مرونته وخفته...</p>
-    
-    <button class="btn" onclick="testUI()">تجربة التفاعل</button>
-    <div id="status">جاهز...</div>
+    <div class="container">
+        <h1>PS5 Lightning Exploit UI</h1>
+        <p>Optimized with custom psSpy mechanism to bypass long discovery delays.</p>
+        
+        <button class="btn" onclick="runFastExploit()">Run Exploit & psSpy</button>
+        <div id="status">Status: Ready to initialize...</div>
+    </div>
 
-    <script>
-        function testUI() {
-            document.getElementById("status").innerText = "التصميم شغال 100% وجاهز للربط على السوني لاحقاً!";
-        }
-    </script>
+    <!-- Core exploit scripts loaded remotely from Sonic's repo -->
+    <script src="https://soniciso1.github.io/pooP2JB/mem.js"></script>
+    <script src="https://soniciso1.github.io/pooP2JB/main.js"></script>
+
+    <!-- Your optimized local high-speed memory sniffer -->
+    <script src="psSpy.js"></script>
 
 </body>
 </html>
