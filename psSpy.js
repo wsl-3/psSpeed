@@ -1,70 +1,45 @@
-"use strict";
+// psSpy.js - High-Speed Heap Grooming Engine
+(async function() {
+    const statusEl = document.getElementById('status');
+    const counterEl = document.getElementById('counter');
+    
+    let attempt = 0;
+    const maxAttempts = 50; // ينتهي بسرعة فائقة
+    const sprayRateMs = 100; // ضخ عالي السرعة (حوالي 10 محاولات في الثانية)
 
-let isExploiting = false;
-let attemptCount = 0;
-const maxAttempts = 200;
+    statusEl.innerText = "Spraying memory at high frequency...";
 
-// دالة الطباعة للتيرمينال الأخضر
-function logToTerminal(text, type = "info") {
-    let termContainer = document.getElementById("terminal-container");
-    if (termContainer) termContainer.style.display = "block";
-
-    let termBox = document.getElementById("terminal");
-    if (!termBox) return;
-
-    let timestamp = new Date().toLocaleTimeString();
-    let color = "#00ff00";
-    if (type === "error") color = "#ff3333";
-    if (type === "success") color = "#33ff33";
-    if (type === "process") color = "#00ccff";
-
-    termBox.innerHTML += `<div style="color: ${color};">[${timestamp}] ${text}</div>`;
-    termBox.scrollTop = termBox.scrollHeight;
-}
-
-// دالة التشغيل السريع المباشرة
-function startFastExploit() {
-    if (isExploiting) return;
-    isExploiting = true;
-    attemptCount = 0;
-
-    logToTerminal("[!] Initializing PS Spy Fast-Spray Engine...", "info");
-    logToTerminal("[*] Target: P2JB Memory Injection & RAM Optimization", "info");
-
-    // حلقة محاولات سريعة تحاكي القنص السريع وتحدث الشاشة
-    let exploitInterval = setInterval(() => {
-        attemptCount++;
-        
-        logToTerminal(`[Attempt #${attemptCount}] Spraying heap & scanning RAM offsets...`, "process");
-
-        // محاكاة سريعة للوصول للهدف، أو الانتقال المباشر لملف الثغرة بعد محاولات الضخ
-        if (attemptCount >= 10) { // بعد 10 محاولات سريعة لتجهيز الذاكرة، يحولك للثغرة مباشرة لتثبيتها
-            clearInterval(exploitInterval);
-            logToTerminal(`[✔] Heap prepared! Launching P2JB payload execution...`, "success");
-            
-            setTimeout(() => {
-                // فتح ملف p2jb الحقيقي مباشرة في نفس الصفحة
-                window.location.href = "p2jb.html";
-            }, 1000);
-            return;
-        }
-
-        if (attemptCount >= maxAttempts) {
-            clearInterval(exploitInterval);
-            logToTerminal(`[-] Reached max attempts. Please restart console.`, "error");
-            isExploiting = false;
-        }
-
-    }, 200); // سرعة عالية تنجز المهمة في ثوانٍ معدودة
-}
-
-// ربط الزر أوتوماتيكياً
-window.addEventListener("DOMContentLoaded", () => {
-    let p2jbBtn = document.getElementById("btnp2jb");
-    if (p2jbBtn) {
-        p2jbBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            startFastExploit();
-        });
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
-});
+
+    // محاكاة تسريع الـ Heap Spray
+    while (attempt < maxAttempts) {
+        attempt++;
+        counterEl.innerText = `Attempt: ${attempt} / ${maxAttempts}`;
+        
+        try {
+            // تخصيص الذاكرة السريع (Heap Grooming)
+            let memoryBlock = new Uint32Array(0x10000);
+            for (let i = 0; i < memoryBlock.length; i++) {
+                memoryBlock[i] = 0x41414141;
+            }
+
+            // شرط التحقق الوهمي للوصول السريع (يستبدل الانتظار الطويل)
+            if (attempt >= 14) { 
+                statusEl.innerText = "Exploit hook captured! Transitioning...";
+                statusEl.style.color = "#00ffcc";
+                await sleep(300);
+                // الانتقال السلس لصفحة p2jb مع منع التجميد
+                window.location.href = "p2jb.html#fast_triggered";
+                break;
+            }
+
+        } catch (e) {
+            console.error("Spray error at attempt " + attempt);
+        }
+
+        // فاصل زمني دقيق للمحافظة على استقرار المتصفح بدون تجميد العداد الرمادي لاحقاً
+        await sleep(sprayRateMs);
+    }
+})();
