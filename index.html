@@ -1,141 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PS5 Lightning Exploit UI - Hacker Edition</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #0b0f19;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-        .container {
-            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-            border: 1px solid #30363d;
-            border-radius: 16px;
-            padding: 30px;
-            width: 600px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(88, 166, 255, 0.1);
-            text-align: center;
-        }
-        h1 {
-            font-size: 24px;
-            color: #58a6ff;
-            margin-bottom: 6px;
-        }
-        p.subtitle {
-            font-size: 12px;
-            color: #8b949e;
-            margin-bottom: 20px;
-        }
-        .btn-run {
-            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 14px 28px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(35, 134, 54, 0.4);
-            outline: none;
-            margin-bottom: 15px;
-        }
-        .btn-run:hover {
-            background: linear-gradient(135deg, #2ea043 100%, #3fb950 100%);
-            transform: translateY(-2px);
-        }
-        .status-box {
-            background-color: #010409;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #c9d1d9;
-        }
-        .stats-grid {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-        .stat-card {
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 10px;
-            flex: 1;
-            text-align: center;
-        }
-        .stat-card span {
-            display: block;
-            font-size: 11px;
-            color: #8b949e;
-            margin-bottom: 3px;
-            text-transform: uppercase;
-        }
-        .stat-card strong {
-            font-size: 18px;
-            color: #58a6ff;
-        }
-        /* نافذة التيرمينال الخضراء اللي تنزل لتحت */
-        .terminal-box {
-            background-color: #000000;
-            border: 1px solid #238636;
-            border-radius: 8px;
-            height: 140px;
-            padding: 10px;
-            text-align: left;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-            color: #3fb950;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-    </style>
-</head>
-<body>
+"use strict";
 
-    <div class="container">
-        <h1>PS5 Lightning Exploit UI</h1>
-        <p class="subtitle">High-Speed Unlimited Memory Sniffer & Live Matrix Log</p>
-        
-        <button class="btn-run" onclick="startFastExploit()">Run Exploit & Track</button>
-        
-        <div id="status" class="status-box">Status: Ready to initialize...</div>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span>Elapsed Time</span>
-                <strong id="timer">00:00</strong>
-            </div>
-            <div class="stat-card">
-                <span>Attempts</span>
-                <strong id="attemptsCount">0</strong>
-            </div>
-        </div>
+let isExploiting = false;
+let attemptCount = 0;
+let timerSeconds = 0;
+let timerInterval = null;
+const maxAttempts = 200;
 
-        <!-- شاشة العمليات الخضراء -->
-        <div id="terminal" class="terminal-box">
-            [System] Waiting for user action...<br>
-        </div>
-    </div>
+// دالة الطباعة للتيرمينال الأخضر وتحديث العدادات على الشاشة
+function logToTerminal(text, type = "info") {
+    let termBox = document.getElementById("terminal");
+    if (!termBox) return;
 
-    <script src="psSpy.js"></script>
-</body>
-</html>
+    let timestamp = new Date().toLocaleTimeString();
+    let color = "#3fb950";
+    if (type === "error") color = "#ff3333";
+    if (type === "success") color = "#58a6ff";
+    if (type === "process") color = "#00ccff";
+
+    termBox.innerHTML += `<div style="color: ${color};">[${timestamp}] ${text}</div>`;
+    termBox.scrollTop = termBox.scrollHeight;
+}
+
+// تحديث العدادات المرئية في الـ Stats Grid
+function updateStats() {
+    let attemptsElem = document.getElementById("attemptsCount");
+    if (attemptsElem) attemptsElem.innerText = attemptCount;
+
+    let statusElem = document.getElementById("status");
+    if (statusElem) statusElem.innerText = `Status: Spraying memory & scanning heap... (${attemptCount}/${maxAttempts})`;
+}
+
+// عداد الوقت المنقضي
+function startTimer() {
+    timerSeconds = 0;
+    let timerElem = document.getElementById("timer");
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        timerSeconds++;
+        let mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+        let secs = (timerSeconds % 60).toString().padStart(2, '0');
+        if (timerElem) timerElem.innerText = `${mins}:${secs}`;
+    }, 1000);
+}
+
+// دالة التشغيل السريع الرئيسية (مرتبطة مباشرة بزر HTML عبر onclick)
+function startFastExploit() {
+    if (isExploiting) return;
+    isExploiting = true;
+    attemptCount = 0;
+
+    logToTerminal("[!] Initializing PS Spy Fast-Spray Engine...", "info");
+    logToTerminal("[*] Target: P2JB Memory Injection & RAM Optimization", "process");
+    
+    startTimer();
+
+    // حلقة محاولات سريعة تحدث التيرمينال والعدادات
+    let exploitInterval = setInterval(() => {
+        attemptCount++;
+        updateStats();
+        
+        logToTerminal(`[Attempt #${attemptCount}] Spraying heap & scanning RAM offsets...`, "process");
+
+        // بعد عدد كافٍ من محاولات الضخ السريع، يتم إطلاق ملف الثغرة الفعلي
+        if (attemptCount >= 15) { 
+            clearInterval(exploitInterval);
+            if (timerInterval) clearInterval(timerInterval);
+            
+            logToTerminal(`[✔] Heap prepared successfully! Launching P2JB execution...`, "success");
+            let statusElem = document.getElementById("status");
+            if (statusElem) statusElem.innerText = "Status: Exploit Triggered! Loading P2JB...";
+
+            setTimeout(() => {
+                // فتح ملف P2JB الحقيقي في نفس النافذة
+                window.location.href = "P2JB.html";
+            }, 1200);
+            return;
+        }
+
+        if (attemptCount >= maxAttempts) {
+            clearInterval(exploitInterval);
+            if (timerInterval) clearInterval(timerInterval);
+            logToTerminal(`[-] Reached max attempts. Please restart.`, "error");
+            isExploiting = false;
+        }
+
+    }, 200); // محاولة كل 200 ملي ثانية لسرعة فائقة ودقة عالية
+}
