@@ -1,109 +1,46 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Exploit Runner</title>
+    <title>PS5 Exploit Accelerator (psSpy)</title>
     <style>
-        body { background-color: #0d1117; color: #3fb950; font-family: monospace; padding: 20px; }
-        #terminal { background: #000; border: 1px solid #30363d; padding: 10px; height: 300px; overflow-y: auto; }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: monospace;
+            text-align: center;
+            padding-top: 20vh;
+        }
+        .container {
+            border: 2px solid #00ffcc;
+            display: inline-block;
+            padding: 30px;
+            border-radius: 10px;
+            background: #1e1e1e;
+            box-shadow: 0 0 15px rgba(0,255,204,0.3);
+        }
+        h1 { color: #00ffcc; font-size: 24px; }
+        #status { font-size: 18px; margin: 15px 0; color: #ffcc00; }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #00ffcc;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <h2>PS5 Exploit Status</h2>
-    <div id="status">Status: Waiting to start...</div>
-    <div>Attempts: <span id="attemptsCount">0</span> | Timer: <span id="timer">00:00</span></div>
-    <div id="terminal"></div>
+    <div class="container">
+        <h1>psSpy Accelerator v1.0</h1>
+        <div id="status">Initializing Fast-Spray Engine...</div>
+        <div class="spinner"></div>
+        <div id="counter">Attempt: 0</div>
+    </div>
 
-    <script>
-        "use strict";
-
-        let isExploiting = false;
-        let attemptCount = 0;
-        let timerSeconds = 0;
-        let timerInterval = null;
-        const maxAttempts = 50;
-
-        function logToTerminal(text, type = "info") {
-            let termBox = document.getElementById("terminal");
-            if (!termBox) return;
-            let timestamp = new Date().toLocaleTimeString();
-            let color = "#3fb950";
-            if (type === "error") color = "#ff3333";
-            if (type === "success") color = "#58a6ff";
-            if (type === "process") color = "#00ccff";
-            termBox.innerHTML += `<div style="color: ${color};">[${timestamp}] ${text}</div>`;
-            termBox.scrollTop = termBox.scrollHeight;
-        }
-
-        function updateStats() {
-            let attemptsElem = document.getElementById("attemptsCount");
-            if (attemptsElem) attemptsElem.innerText = attemptCount;
-            let statusElem = document.getElementById("status");
-            if (statusElem) statusElem.innerText = `Status: Executing real heap spray & memory allocation... (${attemptCount}/${maxAttempts})`;
-        }
-
-        function startTimer() {
-            timerSeconds = 0;
-            let timerElem = document.getElementById("timer");
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timerSeconds++;
-                let mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-                let secs = (timerSeconds % 60).toString().padStart(2, '0');
-                if (timerElem) timerElem.innerText = `${mins}:${secs}`;
-            }, 1000);
-        }
-
-        async function startFastExploit() {
-            if (isExploiting) return;
-            isExploiting = true;
-            attemptCount = 0;
-            logToTerminal("[!] Initializing real memory spray & WebKit exploit...", "info");
-            startTimer();
-
-            try {
-                while (attemptCount < maxAttempts) {
-                    attemptCount++;
-                    updateStats();
-                    let success = executeRealHeapSprayStep(attemptCount);
-
-                    if (success) {
-                        if (timerInterval) clearInterval(timerInterval);
-                        logToTerminal(`[✔] Memory corruption achieved at attempt #${attemptCount}!`, "success");
-                        let statusElem = document.getElementById("status");
-                        if (statusElem) statusElem.innerText = "Status: Exploit Successful! Loading p2jb...";
-                        setTimeout(() => {
-                            window.location.href = "p2jb.html";
-                        }, 1000);
-                        return;
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                }
-                if (timerInterval) clearInterval(timerInterval);
-                logToTerminal(`[-] Max attempts reached without trigger.`, "error");
-                isExploiting = false;
-            } catch (err) {
-                if (timerInterval) clearInterval(timerInterval);
-                logToTerminal(`[Error] ${err.message}`, "error");
-                isExploiting = false;
-            }
-        }
-
-        function executeRealHeapSprayStep(currentAttempt) {
-            let memoryBlock = new Uint32Array(0x10000);
-            for (let i = 0; i < memoryBlock.length; i++) {
-                memoryBlock[i] = 0x41414141;
-            }
-            if (currentAttempt >= 12 && Math.random() < 0.3) { 
-                return true; 
-            }
-            return false;
-        }
-
-        // تشغيل الثغرة تلقائياً عند فتح الصفحة
-        window.onload = () => {
-            startFastExploit();
-        };
-    </script>
+    <script src="psSpy.js"></script>
 </body>
 </html>
